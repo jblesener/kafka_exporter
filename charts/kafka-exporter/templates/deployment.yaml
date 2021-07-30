@@ -49,14 +49,22 @@ spec:
             {{- end }}
             {{- if .Values.kafkaExporter.tls.enabled}}
             - --tls.enabled
+            {{- if .Values.kafkaExporter.tls.caFile}}
             - --tls.ca-file=/etc/tls-certs/ca-file
+            {{- else }}
+            - --tls.ca-file=/etc/ssl/certs/ca-certificates.crt
+            {{- end }}
+            {{- if .Values.kafkaExporter.tls.certFile}}
             - --tls.cert-file=/etc/tls-certs/cert-file
+            {{- end }}
+            {{- if .Values.kafkaExporter.tls.keyFile}}
             - --tls.key-file=/etc/tls-certs/key-file
             {{- end }}
             {{- if .Values.kafkaExporter.log }}
             - --log.level={{ .Values.kafkaExporter.log.level }}
             {{- if .Values.kafkaExporter.log.enableSarama }}
             - --log.enable-sarama
+            {{- end }}
             {{- end }}
             {{- end }}
           ports:
@@ -84,7 +92,7 @@ spec:
             successThreshold: 1
             timeoutSeconds: 9
 
-          {{- if .Values.kafkaExporter.tls.enabled }}
+          {{- if and .Values.kafkaExporter.tls.enabled .Values.kafkaExporter.tls.caFile .Values.kafkaExporter.tls.certFile .Values.kafkaExporter.tls.keyFile}}
           volumeMounts:
           - name: tls-certs
             mountPath: "/etc/tls-certs/"
@@ -105,7 +113,7 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- if .Values.kafkaExporter.tls.enabled }}
+    {{- if and .Values.kafkaExporter.tls.enabled .Values.kafkaExporter.tls.caFile .Values.kafkaExporter.tls.certFile .Values.kafkaExporter.tls.keyFile}}
       volumes:
       - name: tls-certs
         secret:
