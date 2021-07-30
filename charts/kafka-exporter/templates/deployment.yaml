@@ -41,7 +41,7 @@ spec:
             {{- if .Values.kafkaExporter.sasl.enabled }}
             - --sasl.enabled
             {{- if not .Values.kafkaExporter.sasl.handshake }}
-            - --sasl.handshake=false
+            - --no-sasl.handshake
             {{- end }}
             - --sasl.username={{ .Values.kafkaExporter.sasl.username }}
             - --sasl.password={{ .Values.kafkaExporter.sasl.password }}
